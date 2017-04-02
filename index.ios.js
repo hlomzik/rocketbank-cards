@@ -11,13 +11,19 @@ import {
   View
 } from 'react-native';
 
+import Stack from './app/Stack'
 import Card from './app/Card'
 
 export default class RocketbankCards extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Card name="Рублевая карта" amount="10000" currency="$" />
+        <Stack>
+          <Card name="Рублевая карта" amount={31337} currency="₽" />
+          <Card name="Долларовая карта" amount={800} currency="$" />
+          <Card name="Зарплатная карта" amount={200000} currency="₽" />
+          <Card name="Запасная карта" amount={1000} currency="€" />
+        </Stack>
       </View>
     );
   }
