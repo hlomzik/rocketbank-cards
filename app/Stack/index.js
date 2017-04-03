@@ -1,9 +1,9 @@
 // @flow
 
 import React from 'react'
-import { ScrollView } from 'react-native'
+import { ScrollView, View } from 'react-native'
 
-import ScrollItem from './Item'
+import StackItem from './Item'
 
 type StackProps = { children?: Element[] }
 // Event don't have contentOffset :(
@@ -16,7 +16,6 @@ export default class Stack extends React.Component {
 
   onScroll = (e: ScollEvent) => {
     const y = e.nativeEvent.contentOffset.y
-    console.log(y, e.nativeEvent)
     // there is a problem with changing contentSize.height
     // and contentOffset.y sometimes dropped to zero,
     // so for now just ignore such cases and think about height;
@@ -26,19 +25,31 @@ export default class Stack extends React.Component {
 
   render() {
     const items = this.props.children || []
+    const count = items.length
+    const { shift } = this.state
 
     return (
       // call it every frame (once in 16ms)
-      <ScrollView onScroll={this.onScroll} scrollEventThrottle={16}>{
-        items.map((child, i) => (
-          <ScrollItem
-            key={i}
-            gap={this.state.shift * (i + 1)}
-            >
-            {child}
-          </ScrollItem>
-        ))
-      }</ScrollView>
+      <ScrollView
+        onScroll={this.onScroll}
+        scrollEventThrottle={16}
+        >{items.map((child, i) => (
+          // we need a wrapper to place each card on separate z layer
+          // to not cross and overlap with others during rotation
+          <View key={i} style={{ transform: [{ perspective: 10 - i }] }}>
+            <StackItem
+              opacity={(10 - count + 1 + i) / 10}
+              transform={[
+                { perspective: 1000 },
+                { translateY: shift * (i + 1) ** 2 },
+                // don't flip it over and over, limit angle
+                { rotateX: `${Math.max(-35, -shift * (i + 1))}deg` },
+              ]}
+              >
+              {child}
+            </StackItem>
+          </View>
+      ))}</ScrollView>
     )
   }
 }
