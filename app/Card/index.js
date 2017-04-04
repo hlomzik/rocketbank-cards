@@ -40,9 +40,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: 'space-between',
     padding: 25,
-    shadowColor: 'black',
-    shadowRadius: 5,
-    shadowOpacity: 0.3
+
+    shadowColor: '#ee7600',
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 1,
+    shadowRadius: -1,
   },
   name: {
     color: 'white',
