@@ -3,7 +3,6 @@
 import React from 'react'
 import { ScrollView, View } from 'react-native'
 
-import StackItem from './Item'
 
 type StackProps = { children?: Element[] }
 // Event don't have contentOffset :(
@@ -36,18 +35,20 @@ export default class Stack extends React.Component {
         >{items.map((child, i) => (
           // we need a wrapper to place each card on separate z layer
           // to not cross and overlap with others during rotation
-          <View key={i} style={{ transform: [{ perspective: 10 - i }] }}>
-            <StackItem
-              opacity={(10 - count + 1 + i) / 10}
-              transform={[
+          <View key={i} style={{ transform: [{ perspective: count - i }] }}>
+            <View style={{
+              padding: 40,
+              paddingVertical: 0,
+              opacity: (10 - count + 1 + i) / 10,
+              transform: [
                 { perspective: 1000 },
                 { translateY: shift * (i + 1) ** 2 },
                 // don't flip it over and over, limit angle
                 { rotateX: `${Math.max(-35, -shift * (i + 1))}deg` },
-              ]}
-              >
+              ]
+              }}>
               {child}
-            </StackItem>
+            </View>
           </View>
       ))}</ScrollView>
     )

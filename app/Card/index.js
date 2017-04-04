@@ -7,19 +7,28 @@ import {
   View
 } from 'react-native'
 
-type CardProps = { name: string, amount: string|number, currency: string }
-
-const Card = ({ name, amount, currency }: CardProps) => (
-  <View style={styles.card}>
+const Card = (props: CardProps) => {
+  const { name, amount, currency} = props
+  const { width = '100%', height = 180, margin = 0 } = props
+  return <View style={[ styles.card, { width, height, margin } ]}>
     <Text style={styles.name}>{name}</Text>
     <Text style={styles.money}>
       <Text style={styles.amount}>{formatAmount(amount)}</Text>
       <Text style={styles.currency}> {currency}</Text>
     </Text>
   </View>
-)
+}
 
 export default Card
+
+type CardProps = {
+  name: string,
+  amount: string|number,
+  currency: string,
+  width?: number,
+  height?: number,
+  margin?: number
+}
 
 const formatAmount = amount => ('' + amount)
   // put space after digits followed by groups of 3 digits only
@@ -29,9 +38,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: 'orange',
     borderRadius: 10,
-    height: 200,
     justifyContent: 'space-between',
-    margin: 20,
     padding: 25,
     shadowColor: 'black',
     shadowRadius: 5,
