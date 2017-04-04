@@ -60,17 +60,25 @@ export default class Stack extends React.Component {
             <View style={{
               padding: 40,
               paddingVertical: 0,
-              opacity: (10 - count + 1 + i) / 10,
+              opacity: scale()
+                .domain([ h * i + h / 5, h * i + h])
+                .range([ 1, 0.2 ])
+                .clamp(true)
+                (shift),
               transform: [
                 { perspective: 1000 },
-                { translateY: scale()
-                  .clamp(true)
-                  .domain([ 0, h * i ])
-                  .range([ 0, -h * i ])
-                  (shift)
+                { translateY: -scale()
+                    .domain([ 0, h * i ])
+                    .range([ 0, h * i ])
+                    .clamp(true)
+                    (shift)
                 },
-                // don't flip it over and over, limit angle
-                { rotateX: `${Math.max(-35, -shift * (i + 1))}deg` },
+                { rotateX: scale()
+                    .domain([ h * i - h, h * i + h ])
+                    .range([ -40, 0 ])
+                    .clamp(true)
+                    (shift) + 'deg'
+                },
               ]
               }}>
               {child}
