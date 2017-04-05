@@ -1,7 +1,7 @@
 // @flow
 
 import React from 'react'
-import { ScrollView, Text, View } from 'react-native'
+import { Animated, ScrollView, Text, View } from 'react-native'
 
 import { scaleLinear as scale } from 'd3-scale'
 
@@ -16,13 +16,11 @@ export default class Stack extends React.Component {
   props: StackProps
   view: ScrollView
 
-  state = { shift: cardBlockHeight * 3 }
+  state = { shift: new Animated.Value(0) }
 
-  onScroll = (e: ScollEvent) => {
-    const y = e.nativeEvent.contentOffset.y
-    // just stick on start values on scrolling up
-    this.setState({ shift: y > 0 ? y : 0 })
-  }
+  onScroll = Animated.event([{
+    nativeEvent: { contentOffset: { y: this.state.shift } }
+  }])
 
   /** Scroll to the last card on init ASAP */
   componentDidMount () {
@@ -57,32 +55,30 @@ export default class Stack extends React.Component {
           // we need a wrapper to place each card on separate z layer
           // to not cross and overlap with others during rotation
           <View key={i} style={{ transform: [{ perspective: count - i }] }}>
-            <View style={{
+            <Animated.View style={{
               padding: 40,
               paddingVertical: 0,
-              opacity: scale()
-                .domain([ h * i + h / 5, h * i + h])
-                .range([ 1, 0.2 ])
-                .clamp(true)
-                (shift),
+              opacity: this.state.shift.interpolate({
+                inputRange: [ h * i + h / 5, h * i + h],
+                outputRange: [ 1, 0.2 ],
+                extrapolate: 'clamp'
+              }),
               transform: [
                 { perspective: 1000 },
-                { translateY: -scale()
-                    .domain([ 0, h * i ])
-                    .range([ 0, h * i ])
-                    .clamp(true)
-                    (shift)
-                },
-                { rotateX: scale()
-                    .domain([ h * i - h, h * i + h ])
-                    .range([ -40, 0 ])
-                    .clamp(true)
-                    (shift) + 'deg'
-                },
+                { translateY: this.state.shift.interpolate({
+                  inputRange: [ 0, h * i ],
+                  outputRange: [ 0, -h * i ],
+                  extrapolate: 'clamp'
+                })},
+                { rotateX: this.state.shift.interpolate({
+                  inputRange: [ h * i - h, h * i + h ],
+                  outputRange: [ '-40deg', '0deg' ],
+                  extrapolate: 'clamp'
+                })},
               ]
               }}>
               {child}
-            </View>
+            </Animated.View>
           </View>
         ))}</View>
         {/* @todo hardcoded value for iPhone 6; use real sizes */}
