@@ -1,7 +1,7 @@
 // @flow
 
 import React from 'react'
-import { Animated, ScrollView, Text, View } from 'react-native'
+import { Animated, Easing, ScrollView, Text, View } from 'react-native'
 
 import { scaleLinear as scale } from 'd3-scale'
 
@@ -24,13 +24,15 @@ export default class Stack extends React.Component {
 
   /** Scroll to the last card on init ASAP */
   componentDidMount () {
+    // @todo for long additional content here should be
+    // scrolling to the end of all cards and with
+    // card reducing coefficient in mind.
     const items = this.props.children || []
     const count = items.length
     const y = cardBlockHeight * (count - 1)
 
-    setTimeout(() => {
-      this.view.scrollTo({ x: 0, y, animate: false })
-    })
+    // but it's ok for now to just scroll to the end.
+    setTimeout(() => this.view.scrollToEnd())
   }
 
   render() {
@@ -59,15 +61,29 @@ export default class Stack extends React.Component {
               padding: 40,
               paddingVertical: 0,
               opacity: this.state.shift.interpolate({
-                inputRange: [ h * i + h / 5, h * i + h],
+                inputRange: [ h * i, h * count ],
                 outputRange: [ 1, 0.2 ],
+                easing: Easing.out(Easing.cubic),
                 extrapolate: 'clamp'
               }),
               transform: [
                 { perspective: 1000 },
                 { translateY: this.state.shift.interpolate({
-                  inputRange: [ 0, h * i ],
-                  outputRange: [ 0, -h * i ],
+                  inputRange: i ? [
+                    0,
+                    // start moving card some cards before;
+                    // second card should go after the first,
+                    // prev to last should go only on its turn,
+                    // so here is some kind of gaussian
+                    h * (i + i * (count - i - 1) / count)
+                  ] : [ 0, 0 ],
+                  outputRange: i ? [
+                    0,
+                    -h * i
+                  ] : [ 0, 0 ],
+                  // the lesser index — the curvier curve
+                  // last card has linear easing
+                  easing: Easing.bezier(1, 1, .6, 1 - .4 * ((i + 1) / count)),
                   extrapolate: 'clamp'
                 })},
                 { rotateX: this.state.shift.interpolate({
