@@ -11,6 +11,9 @@ type ScollEvent = { nativeEvent: Event & { contentOffset: { y: number }} }
 
 // @todo don't hardcode it this way; should be calculated from screen width
 const cardBlockHeight = 180
+// make cards closer to each other; this's necessary because of rotation
+// and jusr for nice look
+const k = 0.8
 
 export default class Stack extends React.Component {
   props: StackProps
@@ -29,7 +32,7 @@ export default class Stack extends React.Component {
     // card reducing coefficient in mind.
     const items = this.props.children || []
     const count = items.length
-    const y = cardBlockHeight * (count - 1)
+    const y = cardBlockHeight * (count - 1) * k
 
     // but it's ok for now to just scroll to the end.
     setTimeout(() => this.view.scrollToEnd())
@@ -53,15 +56,20 @@ export default class Stack extends React.Component {
         // used to scroll after mount only
         ref={view => { this.view = view }}
         >
-        <View>{items.map((child, i) => (
+        <View style={{
+          marginBottom: cardBlockHeight * (1 - k) / 2
+        }}>{items.map((child, i) => (
           // we need a wrapper to place each card on separate z layer
           // to not cross and overlap with others during rotation
-          <View key={i} style={{ transform: [{ perspective: count - i }] }}>
+          <View key={i} style={{
+            height: cardBlockHeight * k,
+            transform: [{ perspective: count - i }]
+          }}>
             <Animated.View style={{
               padding: 40,
               paddingVertical: 0,
               opacity: this.state.shift.interpolate({
-                inputRange: [ h * i, h * count ],
+                inputRange: [ k * h * i, k * h * count ],
                 outputRange: [ 1, 0.2 ],
                 easing: Easing.out(Easing.cubic),
                 extrapolate: 'clamp'
@@ -75,11 +83,12 @@ export default class Stack extends React.Component {
                     // second card should go after the first,
                     // prev to last should go only on its turn,
                     // so here is some kind of gaussian
-                    h * (i + i * (count - i - 1) / count)
+                    k * h * (i + i * (count - i - 1) / count)
+                    )
                   ] : [ 0, 0 ],
                   outputRange: i ? [
                     0,
-                    -h * i
+                    k * -h * i,
                   ] : [ 0, 0 ],
                   // the lesser index — the curvier curve
                   // last card has linear easing
