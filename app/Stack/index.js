@@ -100,6 +100,17 @@ export default class Stack extends React.Component {
                   outputRange: [ '-40deg', '0deg' ],
                   extrapolate: 'clamp'
                 })},
+                { scaleY: this.state.shift.interpolate({
+                  inputRange: [ h * i - h, h * i + h ],
+                  outputRange: [ 0.8, 1 ],
+                  extrapolate: 'clamp'
+                })},
+                { scaleX: this.state.shift.interpolate({
+                  inputRange: [ h * i - h, h * count - h ],
+                  outputRange: [ 1, 0.6 ],
+                  easing: Easing.bezier(.4, 0, .4, 0),
+                  extrapolate: 'clamp'
+                })},
               ]
               }}>
               {child}
