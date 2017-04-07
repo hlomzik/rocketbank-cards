@@ -69,7 +69,7 @@ export default class Stack extends React.Component {
               padding: 40,
               paddingVertical: 0,
               opacity: this.state.shift.interpolate({
-                inputRange: [ k * h * i, k * h * count ],
+                inputRange: [ k * h * i + h / 2, k * h * count ],
                 outputRange: [ 1, 0.2 ],
                 easing: Easing.out(Easing.cubic),
                 extrapolate: 'clamp'
@@ -79,11 +79,13 @@ export default class Stack extends React.Component {
                 { translateY: this.state.shift.interpolate({
                   inputRange: i ? [
                     0,
+                    // before this point just a linear move down
+                    k * h * (count + i - 1) / 2
                     // start moving card some cards before;
                     // second card should go after the first,
                     // prev to last should go only on its turn,
                     // so here is some kind of gaussian
-                    k * h * (i + i * (count - i - 1) / count)
+                    // k * h * (i + i * (count - i - 1) / count)
                     )
                   ] : [ 0, 0 ],
                   outputRange: i ? [
@@ -92,12 +94,17 @@ export default class Stack extends React.Component {
                   ] : [ 0, 0 ],
                   // the lesser index — the curvier curve
                   // last card has linear easing
-                  easing: Easing.bezier(1, 1, .6, 1 - .4 * ((i + 1) / count)),
+                  easing: Easing.bezier(
+                    .6 + .4 * i / (count - 1),
+                    1,
+                    1,
+                    1,
+                  ),
                   extrapolate: 'clamp'
                 })},
                 { rotateX: this.state.shift.interpolate({
                   inputRange: [ h * i - h, h * i + h ],
-                  outputRange: [ '-40deg', '0deg' ],
+                  outputRange: [ '-30deg', '0deg' ],
                   extrapolate: 'clamp'
                 })},
                 { scaleY: this.state.shift.interpolate({
