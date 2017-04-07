@@ -23,6 +23,8 @@ export default class RocketbankCards extends Component {
           <Card name="Долларовая карта" amount={800} currency="$" />
           <Card name="Зарплатная карта" amount={200000} currency="₽" />
           <Card name="Запасная карта" amount={1000} currency="€" />
+          <Card name="Запасная карта" amount={1000} currency="€" />
+          <Card name="Запасная карта" amount={1000} currency="€" />
         </Stack>
       </View>
     );
