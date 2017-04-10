@@ -9,8 +9,9 @@ import {
 
 const Card = (props: CardProps) => {
   const { name, amount, currency} = props
+  const { style = {} } = props
   const { width = '100%', height = 180, margin = 0 } = props
-  return <View style={[ styles.card, { width, height, margin } ]}>
+  return <View style={[ styles.card, { width, height, margin }, style ]}>
     <Text style={styles.name}>{name}</Text>
     <Text style={styles.money}>
       <Text style={styles.amount}>{formatAmount(amount)}</Text>
@@ -25,6 +26,7 @@ type CardProps = {
   name: string,
   amount: string|number,
   currency: string,
+  style?: Object,
   width?: number,
   height?: number,
   margin?: number
