@@ -3,11 +3,8 @@
 import React from 'react'
 import { Animated, Easing, ScrollView, Text, View } from 'react-native'
 
-import { scaleLinear as scale } from 'd3-scale'
 
 type StackProps = { children?: Element[] }
-// Event don't have contentOffset :(
-type ScollEvent = { nativeEvent: Event & { contentOffset: { y: number }} }
 
 // @todo don't hardcode it this way; should be calculated from screen width
 const cardBlockHeight = 180
