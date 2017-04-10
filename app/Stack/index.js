@@ -83,7 +83,6 @@ export default class Stack extends React.Component {
                     // prev to last should go only on its turn,
                     // so here is some kind of gaussian
                     // k * h * (i + i * (count - i - 1) / count)
-                    )
                   ] : [ 0, 0 ],
                   outputRange: i ? [
                     0,
